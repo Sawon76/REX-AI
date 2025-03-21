@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumina AI - Image Generation</title>
+  <style>
+    :root {
+      /* Dark Theme (Default) */
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --primary: #ffffff;
+      --secondary: #cccccc;
+      --text: #e0e0e0;
+      --bg-dark: #121212;
+      --bg-gradient-1: #000000;
+      --bg-gradient-2: #1a1a1a;
+      --bg-gradient-3: #2a2a2a;
+      --card-bg: rgba(0, 0, 0, 0.3);
+      --input-bg: rgba(0, 0, 0, 0.2);
+      --button-bg: linear-gradient(to right, #444444, #666666);
+      --dot-color: rgba(255, 255, 255, 0.03);
+      --dropdown-bg: #333333;
+      /* Added dropdown background for dark theme */
+    }
+
+    [data-theme="light"] {
+      --glass-bg: rgba(0, 0, 0, 0.03);
+      --glass-border: rgba(0, 0, 0, 0.08);
+      --primary: #000000;
+      --secondary: #333333;
+      --text: #222222;
+      --bg-dark: #f8f8f8;
+      --bg-gradient-1: #e5e5e5;
+      --bg-gradient-2: #f0f0f0;
+      --bg-gradient-3: #ffffff;
+      --card-bg: rgba(0, 0, 0, 0.02);
+      --input-bg: rgba(0, 0, 0, 0.05);
+      --button-bg: linear-gradient(to right, #888888, #aaaaaa);
+      --dot-color: rgba(0, 0, 0, 0.03);
+      --dropdown-bg: #e0e0e0;
+      /* Added dropdown background for light theme */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
+      background-size: 30px 30px;
+      z-index: -1;
+    }
+    /* Add these responsive design enhancements to your existing CSS */
+
+/* Base responsive layout improvements */
+body {
+  padding: 1rem;
+}
+
+.container {
+  width: 100%;
+  padding: 0 10px;
+}
+
+/* Improved responsive grid */
+.main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .main {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  body {
+    padding: 2rem;
+  }
+  
+  .container {
+    padding: 0;
+  }
+}
+
+/* Header responsiveness */
+header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-controls {
+  width: 100%;
+  justify-content: space-between;
+}
+
+@media (min-width: 640px) {
+  header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .header-controls {
+    width: auto;
+  }
+}
+
+/* Tab responsiveness */
+.tabs {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
+@media (min-width: 480px) {
+  .tab {
+    flex-grow: 0;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Model cards responsiveness */
+.model-list {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .model-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .model-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .model-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Modal improvements for mobile */
+.modal-content {
+  width: 95%;
+  max-width: 95%;
+  padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .modal-content {
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem;
+  }
+}
+
+/* Improve form controls for touch */
+input, select, textarea, button {
+  padding: 0.75rem;
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (min-width: 768px) {
+  input, select, textarea, button {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Output container height adjustment */
+.output-container {
+  height: 300px;
+}
+
+@media (min-width: 768px) {
+  .output-container {
+    height: 400px;
+  }
+}
+
+/* Improved touch targets */
+.theme-toggle {
+  padding: 0.5rem 0;
+}
+
+.toggle-switch {
+  width: 60px;
+  height: 30px;
+}
+
+.toggle-knob {
+  width: 24px;
+  height: 24px;
+  top: 2px;
+}
+
+[data-theme="light"] .toggle-knob {
+  left: calc(100% - 26px);
+}
+
+/* Fix font size on small screens */
+.logo {
+  font-size: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .logo {
+    font-size: 2rem;
+  }
+}
+
+/* Fix glass card padding on mobile */
+.glass-card {
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .glass-card {
+    padding: 2rem;
+  }
+}
+
+/* Ensure the magic wand button is easily tappable */
+.magic-wand-btn {
+  padding: 8px;
+  right: 5px;
+  top: 5px;
+}
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Glass Card Styling */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header Styling */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .toggle-knob {
+      left: calc(100% - 20px);
+    }
+
+    /* Main Content Styling */
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .header-controls {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+    }
+
+    /* Form Styling */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .prompt-container {
+      position: relative;
+    }
+
+    .magic-wand-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--secondary);
+      transition: transform 0.3s ease, color 0.3s ease;
+      padding: 0;
+      z-index: 10;
+    }
+
+    .magic-wand-btn:hover {
+      transform: scale(1.2) rotate(15deg);
+      color: var(--primary);
+    }
+
+    .magic-wand-btn.active {
+      color: #FFD700;
+      /* Gold color when active */
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    /* Updated styling for dropdown elements */
+    select {
+      background-color: var(--dropdown-bg);
+      appearance: none;
+      /* Removes default browser arrow */
+      background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+
+    [data-theme="light"] select {
+      background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    button {
+      background: var(--button-bg);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Output Area */
+    .output-container {
+      position: relative;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 12px;
+      background-color: var(--card-bg);
+    }
+
+    .output-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .placeholder {
+      color: var(--text);
+      opacity: 0.5;
+      text-align: center;
+    }
+
+    /* Model Card Styling */
+    .model-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .model-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .model-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      border-color: var(--primary);
+    }
+
+    .model-card.active {
+      border-color: var(--primary);
+      background: var(--input-bg);
+    }
+
+    .model-card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .model-card p {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Tab Styling */
+    .tabs {
+      display: flex;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+    }
+
+    .tab.active {
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--bg-dark);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .badge {
+      background: var(--primary);
+      color: var(--bg-dark);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Checkbox Styling */
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .checkbox-wrapper label {
+      margin-bottom: 0;
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      cursor: pointer;
+    }
+
+    .enhance-info {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">REX-AI</div>
+      <div class="header-controls">
+        <div class="theme-toggle" id="theme-toggle">
+          <span>🌙</span>
+          <div class="toggle-switch">
+            <div class="toggle-knob"></div>
+          </div>
+          <span>☀️</span>
+        </div>
+        <button id="settings-btn">Settings</button>
+      </div>
+    </header>
+
+    <div class="glass-card">
+      <div class="tabs">
+        <div class="tab active" data-tab="generate">Generate</div>
+        <div class="tab" data-tab="models">Models</div>
+        <div class="tab" data-tab="history">History</div>
+      </div>
+
+      <div class="tab-content" id="generate-tab">
+        <div class="main">
+          <div class="controls">
+            <div class="form-group">
+              <label for="prompt">Text Prompt</label>
+              <div class="prompt-container">
+                <textarea id="prompt" rows="4" placeholder="Describe the image you want to generate..."></textarea>
+                <button id="magic-wand" class="magic-wand-btn" title="Enhance prompt">✨</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="model">Selected Model</label>
+              <select id="model">
+                <option value="stabilityai/stable-diffusion-xl-base-1.0">Stable Diffusion XL</option>
+                <option value="runwayml/stable-diffusion-v1-5">Stable Diffusion v1.5</option>
+                <option value="prompthero/openjourney">Openjourney</option>
+                <option value="dreamlike-art/dreamlike-photoreal-2.0">Dreamlike Photoreal</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="text-position">Text Overlay Position</label>
+              <select id="text-position">
+                <option value="none">No Text Overlay</option>
+                <option value="top">Top</option>
+                <option value="bottom">Bottom</option>
+                <option value="center">Center</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="overlay-text-group" style="display: none;">
+              <label for="overlay-text">Overlay Text</label>
+              <input type="text" id="overlay-text" placeholder="Enter text to overlay on the image">
+            </div>
+
+            <div class="form-group">
+              <label for="image-size">Image Size</label>
+              <select id="image-size">
+                <option value="512x512">512 x 512</option>
+                <option value="768x768">768 x 768</option>
+                <option value="1024x1024">1024 x 1024</option>
+                <option value="512x768">512 x 768</option>
+                <option value="768x512">768 x 512</option>
+              </select>
+            </div>
+
+            
+
+            <button id="generate-btn">Generate Image</button>
+          </div>
+
+          <div class="output-container">
+            <div class="placeholder">
+              <p>Your generated image will appear here</p>
+              <small>Make sure you've set up your HuggingFace API key in Settings</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="models-tab" style="display: none;">
+        <h2>Available Models</h2>
+        <p>Select models to add to your collection. You can manage your saved models here.</p>
+
+        <div class="form-group">
+          <label for="search-model">Search HuggingFace Models</label>
+          <input type="text" id="search-model" placeholder="Search for text-to-image models...">
+        </div>
+
+        <button id="add-model-btn">Add Custom Model</button>
+
+        <h3 style="margin-top: 2rem;">Your Models</h3>
+        <div class="model-list">
+          <div class="model-card active">
+            <h3>Stable Diffusion XL</h3>
+            <p>High-quality image generation</p>
+            <span class="badge">Default</span>
+          </div>
+          <div class="model-card">
+            <h3>Stable Diffusion v1.5</h3>
+            <p>Balanced quality & speed</p>
+          </div>
+          <div class="model-card">
+            <h3>Openjourney</h3>
+            <p>Midjourney-inspired model</p>
+          </div>
+          <div class="model-card">
+            <h3>Dreamlike Photoreal</h3>
+            <p>Photorealistic outputs</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="history-tab" style="display: none;">
+        <h2>Generation History</h2>
+        <p>Your previously generated images will appear here.</p>
+
+        <div style="text-align: center; margin-top: 3rem; opacity: 0.5;">
+          <p>No generation history yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settings-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="close-button">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label for="api-key">HuggingFace API Key</label>
+        <input type="password" id="api-key" placeholder="Enter your HuggingFace API key">
+      </div>
+
+      <div class="form-group">
+        <label for="default-model">Default Model</label>
+        <select id="default-model">
+          <option value="stabilityai/stable-diffusion-xl-base-1.0">Stable Diffusion XL</option>
+          <option value="runwayml/stable-diffusion-v1-5">Stable Diffusion v1.5</option>
+          <option value="prompthero/openjourney">Openjourney</option>
+          <option value="dreamlike-art/dreamlike-photoreal-2.0">Dreamlike Photoreal</option>
+        </select>
+      </div>
+
+      <button id="save-settings">Save Settings</button>
+    </div>
+  </div>
+
+  <!-- Add Model Modal -->
+  <div class="modal" id="add-model-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Custom Model</h2>
+        <button class="close-button">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label for="model-id">Model ID</label>
+        <input type="text" id="model-id" placeholder="e.g., runwayml/stable-diffusion-v1-5">
+      </div>
+
+      <div class="form-group">
+        <label for="model-name">Display Name</label>
+        <input type="text" id="model-name" placeholder="Custom name for this model">
+      </div>
+
+      <div class="form-group">
+        <label for="model-description">Description</label>
+        <input type="text" id="model-description" placeholder="Brief description of this model">
+      </div>
+
+      <button id="save-model">Add Model</button>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const addModelBtn = document.getElementById('add-model-btn');
+    const addModelModal = document.getElementById('add-model-modal');
+    const closeButtons = document.querySelectorAll('.close-button');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const textPosition = document.getElementById('text-position');
+    const overlayTextGroup = document.getElementById('overlay-text-group');
+    const generateBtn = document.getElementById('generate-btn');
+    const outputContainer = document.querySelector('.output-container');
+    const modelCards = document.querySelectorAll('.model-card');
+    const saveSettingsBtn = document.getElementById('save-settings');
+    const saveModelBtn = document.getElementById('save-model');
+    const themeToggle = document.getElementById('theme-toggle');
+    const magicWandBtn = document.getElementById('magic-wand');
+    const blackWhiteOnly = document.getElementById('black-white-only');
+
+    // Magic Wand button state
+    let magicWandActive = false;
+
+    // Magic Wand functionality
+    magicWandBtn.addEventListener('click', () => {
+      magicWandActive = !magicWandActive;
+      magicWandBtn.classList.toggle('active', magicWandActive);
+
+      // Show visual feedback
+      if (magicWandActive) {
+        magicWandBtn.innerHTML = "✨"; // Sparkle emoji
+        magicWandBtn.title = "Prompt enhancement active";
+      } else {
+        magicWandBtn.innerHTML = "✨"; // Same emoji but not active
+        magicWandBtn.title = "Enhance prompt";
+      }
+    });
+
+    // Theme Toggle
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+
+    // Load saved theme
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    });
+
+    // Event Listeners
+    settingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'flex';
+    });
+
+    addModelBtn.addEventListener('click', () => {
+      addModelModal.style.display = 'flex';
+    });
+
+    closeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        settingsModal.style.display = 'none';
+        addModelModal.style.display = 'none';
+      });
+    });
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        tabs.forEach(t => t.classList.remove('active'));
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Hide all tab contents
+        tabContents.forEach(content => {
+          content.style.display = 'none';
+        });
+
+        // Show the selected tab content
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(`${tabId}-tab`).style.display = 'block';
+      });
+    });
+
+    textPosition.addEventListener('change', () => {
+      if (textPosition.value !== 'none') {
+        overlayTextGroup.style.display = 'block';
+      } else {
+        overlayTextGroup.style.display = 'none';
+      }
+    });
+
+    modelCards.forEach(card => {
+      card.addEventListener('click', () => {
+        modelCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+
+    generateBtn.addEventListener('click', async () => {
+      let prompt = document.getElementById('prompt').value;
+      const apiKey = document.getElementById('api-key').value;
+
+      if (!prompt) {
+        alert('Please enter a prompt');
+        return;
+      }
+
+      if (!apiKey) {
+        alert('Please enter your HuggingFace API key in Settings');
+        settingsModal.style.display = 'flex';
+        return;
+      }
+
+      // Enhanced prompt handling using magic wand
+      if (magicWandActive) {
+        // Simulate prompt enhancement
+        const originalPrompt = prompt;
+        // In a real app, this would call an API to enhance the prompt
+        prompt = "Enhanced: " + originalPrompt + ", detailed, professional, high quality";
+
+        // Show the enhanced prompt
+        alert(`Prompt enhanced to: ${prompt}`);
+      }
+
+      // Add black and white parameter if checked
+      if (blackWhiteOnly.checked) {
+        prompt += ", black and white, monochrome, grayscale";
+      }
+
+      // Simulate loading
+      outputContainer.innerHTML = '<div class="placeholder"><p>Generating image...</p></div>';
+
+      // In a real app, this would call the HuggingFace API
+      // For this demo, we'll just show a placeholder after a delay
+      setTimeout(() => {
+        // Create a placeholder with a "filter" to simulate black & white if that option is selected
+        outputContainer.innerHTML = `<img src="/api/placeholder/400/320" 
+                    alt="Generated image" 
+                    style="${blackWhiteOnly.checked ? 'filter: grayscale(100%);' : ''}" />`;
+
+        // Add overlay text if selected
+        const textPos = textPosition.value;
+        if (textPos !== 'none') {
+          const overlayText = document.getElementById('overlay-text').value;
+          if (overlayText) {
+            const textOverlay = document.createElement('div');
+            textOverlay.style.position = 'absolute';
+            textOverlay.style.color = 'white';
+            textOverlay.style.textShadow = '0 2px 4px rgba(0,0,0,0.5)';
+            textOverlay.style.padding = '1rem';
+            textOverlay.style.textAlign = 'center';
+            textOverlay.style.width = '100%';
+
+            if (textPos === 'top') textOverlay.style.top = '0';
+            if (textPos === 'bottom') textOverlay.style.bottom = '0';
+            if (textPos === 'center') {
+              textOverlay.style.top = '50%';
+              textOverlay.style.transform = 'translateY(-50%)';
+            }
+
+            textOverlay.textContent = overlayText;
+            outputContainer.appendChild(textOverlay);
+          }
+        }
+      }, 1500);
+    });
+
+    saveSettingsBtn.addEventListener('click', () => {
+      const apiKey = document.getElementById('api-key').value;
+      if (apiKey) {
+        // In a real app, store this securely
+        localStorage.setItem('huggingface_api_key', apiKey);
+        alert('Settings saved successfully!');
+        settingsModal.style.display = 'none';
+      } else {
+        alert('Please enter your HuggingFace API key');
+      }
+    });
+
+    saveModelBtn.addEventListener('click', () => {
+      const modelId = document.getElementById('model-id').value;
+      const modelName = document.getElementById('model-name').value;
+      const modelDesc = document.getElementById('model-description').value;
+
+      if (!modelId || !modelName) {
+        alert('Please enter both Model ID and Display Name');
+        return;
+      }
+
+      // In a real app, this would validate and store the model
+      alert('Model added successfully!');
+      addModelModal.style.display = 'none';
+
+      // Add the new model card
+      const modelList = document.querySelector('.model-list');
+      const newModelCard = document.createElement('div');
+      newModelCard.className = 'model-card';
+      newModelCard.innerHTML = `
+                <h3>${modelName}</h3>
+                <p>${modelDesc || 'Custom model'}</p>
+            `;
+      modelList.appendChild(newModelCard);
+
+      // Add event listener to the new card
+      newModelCard.addEventListener('click', () => {
+        modelCards.forEach(c => c.classList.remove('active'));
+        newModelCard.classList.add('active');
+      });
+    });
+
+    // Check for stored API key on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const storedApiKey = localStorage.getItem('huggingface_api_key');
+      if (storedApiKey) {
+        document.getElementById('api-key').value = storedApiKey;
+      }
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === settingsModal) {
+        settingsModal.style.display = 'none';
+      }
+      if (e.target === addModelModal) {
+        addModelModal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>
